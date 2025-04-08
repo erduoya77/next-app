@@ -1,0 +1,44 @@
+/* 禁用文章内容中的图片点击效果 */
+.prose img {
+  pointer-events: none;
+}
+
+/* 确保文章内容中的图片保持合适的大小 */
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+} 
+
+/* 侧边栏子菜单样式 */
+aside nav ul li ul {
+  margin-left: 1.5rem; /* 增加缩进，层次更清晰 */
+  margin-top: 0.5rem; /* 子菜单与主菜单之间的垂直间距 */
+  margin-bottom: 0.5rem; /* 子菜单与下方内容的垂直间距 */
+}
+
+aside nav ul li ul li {
+  margin-bottom: 0.5rem; /* 子菜单项之间的垂直间距，替代 space-y-1 */
+}
+
+aside nav ul li ul li a {
+  font-size: 0.875rem; /* 子菜单字体稍小 */
+  padding: 0.5rem 0; /* 增加内边距，提升可读性 */
+  display: block; /* 确保链接占满整行 */
+}
+
+aside nav ul li button {
+  padding: 0.5rem 0; /* 主菜单按钮的内边距 */
+}
+
+
+aside nav ul li ul {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+aside nav ul li ul[style*="display: block"] {
+  max-height: 200px; /* 调整为合适的数值 */
+  opacity: 1;
+}

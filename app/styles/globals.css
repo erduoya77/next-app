@@ -1,0 +1,325 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+}
+
+/* 亮色模式变量 */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --theme-color: #1989fa;
+}
+
+/* 暗色模式变量 */
+.dark {
+  --background: #111827;
+  --foreground: #f3f4f6;
+  --theme-color: #60a5fa;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Noto Serif SC', serif;
+}
+
+/* 代码块样式 */
+.prose pre {
+  @apply my-4 p-0 bg-transparent;
+}
+
+.prose code {
+  @apply text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono;
+}
+
+.dark .prose code {
+  background: #1e293b;
+}
+
+.prose pre code {
+  @apply p-4 bg-gray-100 dark:bg-gray-800 rounded-lg block overflow-x-auto;
+}
+
+.dark .prose pre code {
+  background: #1e293b !important;
+}
+
+/* 代码高亮样式 */
+.hljs {
+  @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #d73a49 !important;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #6f42c1 !important;
+}
+
+.hljs-string,
+.hljs-doctag,
+.hljs-type,
+.hljs-name,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+  color: #032f62 !important;
+}
+
+.hljs-comment,
+.hljs-meta {
+  color: #6a737d !important;
+}
+
+.hljs-literal,
+.hljs-built_in,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+  color: #005cc5 !important;
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #e36209 !important;
+}
+
+.hljs-attribute {
+  color: #005cc5 !important;
+}
+
+.hljs-number,
+.hljs-formula {
+  color: #005cc5 !important;
+}
+
+/* 标签样式 */
+.memo-tag {
+  @apply inline-block px-2 py-0.5 mx-1 bg-gray-100 dark:bg-gray-800 rounded text-blue-600 dark:text-blue-400 text-sm transition-colors hover:bg-gray-200 dark:hover:bg-gray-700;
+}
+
+/* 音乐播放器样式 */
+.memo-music-wrapper {
+  @apply my-4 rounded-lg overflow-hidden bg-white dark:bg-gray-800 shadow-sm;
+}
+
+meting-js {
+  @apply block w-full min-h-[90px];
+}
+
+meting-js .aplayer {
+  @apply m-0 shadow-none rounded-lg bg-transparent;
+}
+
+meting-js .aplayer .aplayer-pic {
+  @apply h-[90px] w-[90px] rounded;
+}
+
+meting-js .aplayer .aplayer-info {
+  @apply ml-[90px] h-[90px] py-3 px-2 border-none bg-transparent;
+}
+
+meting-js .aplayer .aplayer-info .aplayer-music {
+  @apply p-0 mb-1.5;
+}
+
+meting-js .aplayer .aplayer-info .aplayer-controller {
+  @apply p-0;
+}
+
+meting-js .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap {
+  @apply m-0 mb-1;
+}
+
+meting-js .aplayer .aplayer-info .aplayer-controller .aplayer-time {
+  @apply h-5;
+}
+
+meting-js .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-time-inner {
+  @apply align-middle;
+}
+
+meting-js .aplayer .aplayer-lrc {
+  @apply mt-1 h-5;
+}
+
+/* 修正头像旋转问题 */
+.memo-avatar {
+  @apply rotate-0;
+}
+
+/* Markdown 内容样式 */
+.prose {
+  @apply max-w-none;
+}
+
+.prose img {
+  @apply my-4 rounded-lg cursor-zoom-in;
+}
+
+.article img {
+  @apply pointer-events-none max-w-full h-auto my-4;
+}
+
+.article pre {
+  @apply my-4 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-x-auto;
+}
+
+.dark .article pre {
+  background-color: #1f2937;
+}
+
+.article code {
+  @apply font-mono text-sm text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded;
+}
+
+.dark .article code {
+  color: #e5e7eb;
+  background-color: #1f2937;
+}
+
+.article mark {
+  @apply bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 px-2 py-1 rounded;
+}
+
+.dark .article mark {
+  background-color: #78350f;
+  color: #fef3c7;
+}
+
+.article blockquote {
+  @apply my-4 py-2 px-4 border-l-4 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400;
+}
+
+.dark .article blockquote {
+  border-left-color: #374151;
+  background-color: #1f2937;
+  color: #9ca3af;
+}
+
+.article table {
+  @apply w-full my-4 border-collapse;
+}
+
+.article th,
+.article td {
+  @apply p-2 border border-gray-200 dark:border-gray-700;
+}
+
+.dark .article th,
+.dark .article td {
+  border-color: #374151;
+}
+
+.article th {
+  @apply bg-gray-100 dark:bg-gray-800 font-semibold;
+}
+
+.dark .article th {
+  background-color: #1f2937;
+}
+
+.article tr:nth-child(even) {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+.article hr {
+  @apply my-8 border-0 border-t border-gray-200 dark:border-gray-700;
+}
+
+.dark .article hr {
+  border-color: #374151;
+}
+
+.article a {
+  @apply text-blue-600 dark:text-blue-400 underline hover:no-underline;
+}
+
+.dark .article a {
+  color: #60a5fa;
+}
+
+.article ul,
+.article ol {
+  @apply my-4 pl-8;
+}
+
+.article ul {
+  @apply list-disc;
+}
+
+.article ol {
+  @apply list-decimal;
+}
+
+.article li {
+  @apply my-2;
+}
+
+.article h1,
+.article h2,
+.article h3,
+.article h4,
+.article h5,
+.article h6 {
+  @apply mt-8 mb-4 font-semibold leading-tight;
+}
+
+.article h1 {
+  @apply text-4xl;
+}
+
+.article h2 {
+  @apply text-3xl;
+}
+
+.article h3 {
+  @apply text-2xl;
+}
+
+.article h4 {
+  @apply text-xl;
+}
+
+.article h5 {
+  @apply text-lg;
+}
+
+.article h6 {
+  @apply text-base;
+}
+
+.article p {
+  @apply my-4 leading-7;
+}
