@@ -82,7 +82,7 @@ export const config = {
   },
 
   footer: {
-    copyright: '© 2024 个人博客',
-    beian: '鄂ICP备20230013号',
+    copyright: '© 2024 erduoya',
+    beian: '鄂ICP备2023001339号',
   },
 };
