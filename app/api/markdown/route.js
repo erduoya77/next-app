@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs/promises'
+import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import { config } from '@/config/config'
@@ -7,14 +7,35 @@ import { config } from '@/config/config'
 // 获取内容根目录的绝对路径
 const CONTENT_PATH = path.join(process.cwd(), config.site.contentPath)
 
-// 解析 markdown 文件
-async function parseMarkdownFile(filePath) {
+// 添加调试信息，帮助排查问题
+
+
+
+
+// 检查目录是否存在
+function checkDirectoryExists(dirPath) {
   try {
-    
-    
-    
+    fs.accessSync(dirPath)
+    return true
+  } catch (error) {
+    console.error(`目录不存在: ${dirPath}`, error)
+    return false
+  }
+}
+
+// 解析 markdown 文件
+function parseMarkdownFile(filePath) {
+  try {
     const fullPath = path.join(CONTENT_PATH, filePath)
-    const fileContent = await fs.readFile(fullPath, 'utf-8')
+    
+    
+    // 检查文件是否存在
+    if (!fs.existsSync(fullPath)) {
+      console.error(`文件不存在: ${fullPath}`)
+      return null
+    }
+    
+    const fileContent = fs.readFileSync(fullPath, 'utf-8')
     const { data: frontmatter, content } = matter(fileContent)
     
     // 获取文件名（不含扩展名）作为 slug
@@ -36,7 +57,7 @@ async function parseMarkdownFile(filePath) {
     // 确保有date字段，如果没有就用文件修改时间
     if (!frontmatter.date) {
       try {
-        const stats = await fs.stat(fullPath)
+        const stats = fs.statSync(fullPath)
         frontmatter.date = stats.mtime.toISOString().split('T')[0]
       } catch (err) {
         frontmatter.date = new Date().toISOString().split('T')[0]
@@ -48,11 +69,7 @@ async function parseMarkdownFile(filePath) {
       frontmatter.tags = [frontmatter.tags]
     }
     
-    console.log(`解析文件元数据:`, {
-      slug: frontmatter.slug,
-      type: frontmatter.type,
-      title: frontmatter.title
-    })
+    
     
     return {
       metadata: frontmatter,
@@ -66,26 +83,36 @@ async function parseMarkdownFile(filePath) {
 }
 
 // 递归获取目录下的所有 markdown 文件
-async function getAllMarkdownFiles(dirPath) {
+function getAllMarkdownFiles(dirPath) {
   try {
-    
-    
-    
     const fullPath = path.join(CONTENT_PATH, dirPath)
-    const files = await fs.readdir(fullPath)
+    
+    
+    // 检查目录是否存在
+    if (!fs.existsSync(fullPath)) {
+      console.error(`目录不存在: ${fullPath}`)
+      return []
+    }
+    
+    const files = fs.readdirSync(fullPath)
+    
+    
     const markdownFiles = []
 
     for (const file of files) {
       const fullFilePath = path.join(fullPath, file)
-      const stat = await fs.stat(fullFilePath)
+      const stat = fs.statSync(fullFilePath)
 
       if (stat.isDirectory()) {
         // 递归处理子目录
-        const subDirFiles = await getAllMarkdownFiles(path.join(dirPath, file))
+        const subDirFiles = getAllMarkdownFiles(path.join(dirPath, file))
         markdownFiles.push(...subDirFiles)
       } else if (file.endsWith('.md')) {
         // 处理所有 .md 文件
-        markdownFiles.push(path.join(dirPath, file))
+        const post = parseMarkdownFile(path.join(dirPath, file))
+        if (post) {
+          markdownFiles.push(post)
+        }
       }
     }
 
@@ -97,35 +124,54 @@ async function getAllMarkdownFiles(dirPath) {
   }
 }
 
-// 获取文章内容
+// 获取文章内容或目录内容
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url)
     const filePath = searchParams.get('path')
+    const dirPath = searchParams.get('dir')
     
     
     
-    if (!filePath) {
-      console.error('缺少文件路径参数')
-      return NextResponse.json({ error: 'File path is required' }, { status: 400 })
+    // 优先处理文件路径查询
+    if (filePath) {
+      
+      const post = parseMarkdownFile(filePath)
+      
+      if (!post) {
+        console.error('文章未找到:', filePath)
+        return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+      }
+      
+      return NextResponse.json(post)
+    } 
+    // 处理目录查询
+    else if (dirPath) {
+      
+      const files = getAllMarkdownFiles(dirPath)
+      
+      if (!files || files.length === 0) {
+        
+        return NextResponse.json([])
+      }
+      
+      return NextResponse.json(files)
     }
-
-    const post = await parseMarkdownFile(filePath)
-    
-    if (!post) {
-      console.error('文章未找到:', filePath)
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    else {
+      console.error('缺少参数: 需要path或dir参数')
+      return NextResponse.json({ error: 'Either path or dir parameter is required' }, { status: 400 })
     }
-
-    
-    return NextResponse.json(post)
   } catch (error) {
     console.error('Error in markdown API:', error)
-    return NextResponse.json({ error: 'Internal server error', message: error.message }, { status: 500 })
+    return NextResponse.json({ 
+      error: 'Internal server error', 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }, { status: 500 })
   }
 }
 
-// 获取所有文章
+// 获取目录下的所有文章
 export async function POST(request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -133,13 +179,12 @@ export async function POST(request) {
     
     
     
-    const files = await getAllMarkdownFiles(dirPath)
-    
+    const files = getAllMarkdownFiles(dirPath)
     
     // 减少并发请求数，避免可能的问题
     const posts = []
     for (const file of files) {
-      const post = await parseMarkdownFile(file)
+      const post = parseMarkdownFile(file)
       if (post) {
         posts.push(post)
       }

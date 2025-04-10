@@ -23,10 +23,24 @@ module.exports = {
             'ul > li': {
               marginTop: '0.5em',
               marginBottom: '0.5em',
+              paddingLeft: '0.375em',
             },
             'ol > li': {
               marginTop: '0.5em',
               marginBottom: '0.5em',
+              paddingLeft: '0.375em',
+            },
+            ol: {
+              listStyleType: 'decimal',
+              marginTop: '1.25em',
+              marginBottom: '1.25em',
+              paddingLeft: '1.625em',
+            },
+            ul: {
+              listStyleType: 'disc',
+              marginTop: '1.25em',
+              marginBottom: '1.25em',
+              paddingLeft: '1.625em',
             },
             code: {
               backgroundColor: '#f3f4f6',

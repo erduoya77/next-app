@@ -30,9 +30,23 @@ export default function MemosClient() {
 
   // 处理 Markdown 内容
   const processContent = (content) => {
+    
+    
     // 创建占位符数组
     let placeholders = [];
     let placeholderIndex = 0;
+
+    // 预处理有序列表，确保每个列表项前有正确的空格和换行
+    content = content.replace(/^(\d+)\.\s*/gm, (match, num) => {
+      // 确保列表项前有空行
+      return `\n${num}. `;
+    });
+
+    // 预处理无序列表
+    content = content.replace(/^[-*]\s*/gm, (match) => {
+      // 确保列表项前有空行
+      return '\n- ';
+    });
 
     // 处理标签
     content = content.replace(/#([\u4e00-\u9fa5a-zA-Z0-9_]+)(?=\s|$)/g, (match, tag) => {
@@ -101,34 +115,35 @@ export default function MemosClient() {
       return match;
     });
 
-    // 处理纯数字ID
-    content = content.replace(/(?:^|\s)#(\d{6,})\b/g, (match, id) => {
-      return processMusicLink('', id);
-    });
-
     try {
-      // 使用全局 markdown 工具处理内容
-      const result = parseMarkdown({
-        content,
-        metadata: {}
-      });
+      // 使用 parseMarkdown 处理内容
+      const result = parseMarkdown({ content });
       
-      // 检查处理结果
-      if (result && result.content) {
-        // 恢复占位符
-        let finalContent = result.content;
-        placeholders.forEach(({ placeholder, html }) => {
-          finalContent = finalContent.replace(placeholder, html);
+      // 恢复占位符
+      let finalContent = result.content;
+      placeholders.forEach(({ placeholder, html }) => {
+        finalContent = finalContent.replace(placeholder, html);
+      });
+
+      // 添加样式类
+      finalContent = finalContent
+        .replace(/<ol>/g, '<ol style="list-style-type: decimal; padding-left: 2em;">')
+        .replace(/<ul>/g, '<ul style="list-style-type: disc; padding-left: 2em;">');
+
+      
+      
+      // 检查是否包含有序列表标签
+      if (finalContent.includes('<ol>') || finalContent.includes('<li>')) {
+        console.log('列表标签检测:', {
+          hasOL: finalContent.includes('<ol>'),
+          hasLI: finalContent.includes('<li>'),
+          listItems: finalContent.match(/<li>.*?<\/li>/g)
         });
-        
-        return finalContent;
-      } else {
-        console.error('Markdown parsing failed, result is:', result);
-        return content; // 如果解析失败，返回原始内容
       }
+
+      return finalContent;
     } catch (error) {
       console.error('Error processing markdown content:', error);
-      // 发生错误时返回原始内容
       return content;
     }
   };
@@ -401,7 +416,7 @@ export default function MemosClient() {
             </div>
 
             <div
-              className="prose dark:prose-invert max-w-none"
+              className="prose dark:prose-invert max-w-none prose-ol:list-decimal prose-ul:list-disc prose-li:marker:text-current"
               dangerouslySetInnerHTML={{ __html: processContent(memo.content) }}
             />
 
