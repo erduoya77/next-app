@@ -323,3 +323,8 @@ meting-js .aplayer .aplayer-lrc {
 .article p {
   @apply my-4 leading-7;
 }
+
+.memo-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}

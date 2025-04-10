@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 移动端适配 */
+@media (max-width: 1024px) {
+  .prose {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .prose img {
+    margin: 1rem 0;
+  }
+  
+  .prose h1 {
+    font-size: 1.875rem;
+  }
+  
+  .prose h2 {
+    font-size: 1.5rem;
+  }
+  
+  .prose h3 {
+    font-size: 1.25rem;
+  }
+
+  /* 移动端链接样式优化 */
+  .prose a {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+}
+
+/* 全局链接样式 */
+.prose a {
+  word-wrap: break-word;
+  max-width: 100%;
+  display: inline-block;
+}
+
 /* 禁用文章内容中的图片点击效果 */
 .prose img {
   pointer-events: none;
@@ -77,4 +115,61 @@ aside nav ul li ul[style*="display: block"] {
 .dark .prose ul,
 .dark .prose li::marker {
   color: inherit !important;
+}
+
+/* 代码块样式 */
+.prose pre {
+  position: relative;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  background-color: #1e1e1e;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+}
+
+.prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+}
+
+.dark .prose code {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 代码块复制按钮 */
+.prose pre:hover .copy-button {
+  opacity: 1;
+}
+
+/* 评论区样式 */
+#comments {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dark #comments {
+  border-color: #374151;
+}
+
+/* 移动端评论区适配 */
+@media (max-width: 1024px) {
+  #comments {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
 }

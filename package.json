@@ -29,7 +29,8 @@
     "rehype-stringify": "^10.0.1",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
-    "remark-mermaid": "^0.2.0"
+    "remark-mermaid": "^0.2.0",
+    "twikoo": "^1.6.42"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

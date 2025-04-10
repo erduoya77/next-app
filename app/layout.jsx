@@ -4,6 +4,7 @@ import { getDirectories, getAllTags } from '@/lib/api'
 import { config } from '@/config/config'
 import { ThemeProvider } from 'next-themes'
 import Toolbar from '@/app/components/Toolbar'
+import Comments from '@/app/components/Comments'
 import './styles/globals.css'
 
 export const metadata = {
@@ -52,8 +53,9 @@ export default async function RootLayout({ children }) {
               social={config.social}
               footer={config.footer}
             />
-            <main className="ml-64 flex-1 p-8">
+            <main className="relative z-[35] lg:ml-64 flex-1 p-4 lg:p-8 min-h-screen">
               {children}
+              <Comments />
             </main>
           </div>
           <ViewImage />
