@@ -24,16 +24,19 @@ export default function PostDetail({ post }) {
     // 延迟执行，确保 ReactMarkdown 渲染完成
     const timer = setTimeout(() => {
       const articleHeadings = document.querySelectorAll('.prose h1, .prose h2, .prose h3')
+      
       const headingsData = Array.from(articleHeadings).map(heading => {
-        let cleanId = heading.id
-        if (!cleanId || !/^[a-zA-Z]/.test(cleanId)) {
-          cleanId = `heading-${cleanId || heading.textContent
-            .toLowerCase()
-            .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
-            .replace(/^-|-$/g, '')}`
-          // 直接设置 DOM 元素的 id
-          heading.setAttribute('id', cleanId)
-        }
+        // 生成更可靠的ID
+        const cleanId = heading.textContent
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+          .replace(/^-|-$/g, '')
+          .replace(/--+/g, '-')
+        
+        // 设置标题的ID
+        heading.id = cleanId // 直接设置id属性
+        
         return {
           id: cleanId,
           text: heading.textContent,
@@ -41,11 +44,19 @@ export default function PostDetail({ post }) {
         }
       })
       setHeadings(headingsData)
-       // 调试生成的 headings
-    }, 100) // 延迟 100ms，确保 DOM 已更新
+    }, 1000) // 增加延迟时间到1000ms
 
-    return () => clearTimeout(timer) // 清理定时器
+    return () => clearTimeout(timer)
   }, [post])
+
+  // 添加复制代码功能
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // 复制成功
+    }).catch(err => {
+      console.error('复制失败:', err)
+    })
+  }
 
   const CustomImage = ({ src, alt }) => {
     let imageSrc = src
@@ -96,13 +107,63 @@ export default function PostDetail({ post }) {
         <div className="prose dark:prose-invert max-w-none leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
-            rehypePlugins={[rehypeRaw]} // 移除 rehype-slug，交给 useEffect 处理 id
+            rehypePlugins={[rehypeRaw]}
             components={{
-              h1: ({ node, ...props }) => <h1 className="text-5xl font-bold mb-6" {...props} />,
-              h2: ({ node, ...props }) => <h2 className="text-4xl font-semibold mb-5" {...props} />,
-              h3: ({ node, ...props }) => <h3 className="text-3xl font-medium mb-4" {...props} />,
+              h1: ({ node, children, ...props }) => {
+                const id = children.toString()
+                  .toLowerCase()
+                  .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+                  .replace(/^-|-$/g, '')
+                  .replace(/--+/g, '-')
+                return <h1 id={id} className="text-5xl font-bold mb-6" {...props}>{children}</h1>
+              },
+              h2: ({ node, children, ...props }) => {
+                const id = children.toString()
+                  .toLowerCase()
+                  .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+                  .replace(/^-|-$/g, '')
+                  .replace(/--+/g, '-')
+                return <h2 id={id} className="text-4xl font-semibold mb-5" {...props}>{children}</h2>
+              },
+              h3: ({ node, children, ...props }) => {
+                const id = children.toString()
+                  .toLowerCase()
+                  .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+                  .replace(/^-|-$/g, '')
+                  .replace(/--+/g, '-')
+                return <h3 id={id} className="text-3xl font-medium mb-4" {...props}>{children}</h3>
+              },
               img: CustomImage,
               p: ({ node, ...props }) => <p className="leading-relaxed" {...props} />,
+              a: ({ node, href, children, ...props }) => (
+                <a 
+                  href={href} 
+                  className="text-blue-600 dark:text-blue-400 hover:underline" 
+                  target={href?.startsWith('http') ? '_blank' : undefined}
+                  rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  {...props}
+                >
+                  {children}
+                </a>
+              ),
+              ul: ({ node, ...props }) => <ul className="list-disc pl-6 my-4" {...props} />,
+              ol: ({ node, ...props }) => <ol className="list-decimal pl-6 my-4" {...props} />,
+              li: ({ node, ...props }) => <li className="my-1" {...props} />,
+              blockquote: ({ node, ...props }) => (
+                <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 my-4 italic" {...props} />
+              ),
+              hr: ({ node, ...props }) => <hr className="my-8 border-gray-200 dark:border-gray-700" {...props} />,
+              table: ({ node, ...props }) => (
+                <div className="overflow-x-auto my-4">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" {...props} />
+                </div>
+              ),
+              th: ({ node, ...props }) => (
+                <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" {...props} />
+              ),
+              td: ({ node, ...props }) => (
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" {...props} />
+              ),
               pre({ node, className, children, ...props }) {
                 const match = /language-(\w+)/.exec(className || '')
                 let lang = match ? match[1] : ''
@@ -114,7 +175,13 @@ export default function PostDetail({ post }) {
                   .map(child => (typeof child === 'string' ? child : child.props.children))
                   .join('')
                 return (
-                  <div className="my-6">
+                  <div className="relative my-6">
+                    <button
+                      onClick={() => copyToClipboard(codeContent)}
+                      className="absolute right-2 top-2 px-2 py-1 text-sm bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+                    >
+                      复制代码
+                    </button>
                     <SyntaxHighlighter
                       style={oneDark}
                       language={lang || 'text'}
@@ -145,8 +212,7 @@ export default function PostDetail({ post }) {
       </article>
 
       {headings.length > 0 && (
-        <div className="fixed top-24 right-8 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden xl:block">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">目录</h3>
+        <div className="fixed top-24 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden xl:block">
           <nav className="space-y-2">
             {headings.map((heading, index) => (
               <a
@@ -154,11 +220,14 @@ export default function PostDetail({ post }) {
                 href={`#${heading.id}`}
                 onClick={(e) => {
                   e.preventDefault()
-                  const target = document.querySelector(`#${heading.id}`)
+                  const target = document.getElementById(heading.id)
                   if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' })
+                    target.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    })
                   } else {
-                    console.error(`Target not found: #${heading.id}`) // 调试未找到的目标
+                    // 目标元素未找到，无需额外处理
                   }
                 }}
                 className={`block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 ${

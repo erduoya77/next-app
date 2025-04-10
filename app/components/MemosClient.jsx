@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { marked } from 'marked';
 import Image from 'next/image';
+import { parseMarkdown } from '@/lib/markdown';
 
 const limit = 10;
 const baseUrl = 'https://memos.erduoya.top/api/v1/memo';
@@ -12,9 +12,9 @@ export default function MemosClient() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [currentTag, setCurrentTag] = useState('');
-  const observerRef = useRef();
-  const loadingRef = useRef(null);
+  const [currentTag, setCurrentTag] = useState(null);
+  const observerRef = useRef(null);
+  const lastMemoRef = useRef(null);
 
   // 格式化日期
   const formatDate = (timestamp) => {
@@ -94,7 +94,6 @@ export default function MemosClient() {
 
     // 处理纯文本链接
     content = content.replace(/(?<!\\)"<meting-js[^>]*><\/meting-js>"/g, (match) => {
-      // 提取 id 属性
       const idMatch = match.match(/id="(\d+)"/);
       if (idMatch) {
         return processMusicLink('', idMatch[1]);
@@ -107,48 +106,49 @@ export default function MemosClient() {
       return processMusicLink('', id);
     });
 
-    // 配置 marked
-    marked.setOptions({
-      highlight: function (code, lang) {
-        if (lang && window.hljs && window.hljs.getLanguage(lang)) {
-          try {
-            return window.hljs.highlight(lang, code).value;
-          } catch (err) {}
-        }
-        try {
-          return window.hljs ? window.hljs.highlightAuto(code).value : code;
-        } catch (err) {}
-        return code;
-      },
-      langPrefix: 'hljs language-',
-      gfm: true,
-      breaks: true,
-      pedantic: false,
-      smartLists: true,
-      smartypants: true,
-    });
-
-    // 使用 marked 处理 Markdown 内容
-    content = marked.parse(content);
-
-    // 恢复占位符
-    placeholders.forEach(({ placeholder, html }) => {
-      content = content.replace(placeholder, html);
-    });
-
-    return content;
+    try {
+      // 使用全局 markdown 工具处理内容
+      const result = parseMarkdown({
+        content,
+        metadata: {}
+      });
+      
+      // 检查处理结果
+      if (result && result.content) {
+        // 恢复占位符
+        let finalContent = result.content;
+        placeholders.forEach(({ placeholder, html }) => {
+          finalContent = finalContent.replace(placeholder, html);
+        });
+        
+        return finalContent;
+      } else {
+        console.error('Markdown parsing failed, result is:', result);
+        return content; // 如果解析失败，返回原始内容
+      }
+    } catch (error) {
+      console.error('Error processing markdown content:', error);
+      // 发生错误时返回原始内容
+      return content;
+    }
   };
 
-  // 加载 memos
-  const loadMemos = async () => {
-    if (loading || !hasMore) return;
+  // 标签筛选
+  const filterByTag = async (tag) => {
+    if (currentTag === tag) {
+      clearFilter();
+      return;
+    }
 
+    setCurrentTag(tag);
+    setMemos([]);
+    setHasMore(true);
+    
+    // 直接在这里调用 API
     setLoading(true);
     try {
-      let url = `${baseUrl}?creatorId=1&rowStatus=NORMAL&limit=${limit}&offset=${(page - 1) * limit}`;
-      if (currentTag) {
-        url += `&tag=${encodeURIComponent(currentTag)}`;
-      }
+      const url = `${baseUrl}?creatorId=1&rowStatus=NORMAL&limit=${limit}&offset=0&tag=${encodeURIComponent(tag)}`;
+      
 
       const response = await fetch(url);
       const data = await response.json();
@@ -157,10 +157,102 @@ export default function MemosClient() {
         setHasMore(false);
       }
 
-      setMemos((prev) => [...prev, ...data]);
-      setPage((prev) => prev + 1);
+      setMemos(data);
     } catch (error) {
       console.error('Error loading memos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 添加到window对象，使onclick能够工作
+  useEffect(() => {
+    // 添加到window对象
+    window.filterByTag = filterByTag;
+    
+    // 清理函数
+    return () => {
+      delete window.filterByTag;
+    };
+  }, [currentTag]); // 当currentTag变化时重新设置，确保闭包能访问最新的状态
+
+  // 初始加载
+  useEffect(() => {
+    // 只在组件挂载时加载一次数据
+    const loadInitialData = async () => {
+      setLoading(true);
+      try {
+        const url = `${baseUrl}?creatorId=1&rowStatus=NORMAL&limit=${limit}&offset=0`;
+        
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.length < limit) {
+          setHasMore(false);
+        }
+
+        setMemos(data);
+      } catch (error) {
+        console.error('Error loading initial memos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  // 清除筛选
+  const clearFilter = async () => {
+    setCurrentTag(null);
+    setMemos([]);
+    setHasMore(true);
+    
+    // 直接在这里调用 API
+    setLoading(true);
+    try {
+      const url = `${baseUrl}?creatorId=1&rowStatus=NORMAL&limit=${limit}&offset=0`;
+      
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.length < limit) {
+        setHasMore(false);
+      }
+
+      setMemos(data);
+    } catch (error) {
+      console.error('Error loading memos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 加载更多
+  const loadMore = async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    try {
+      let url = `${baseUrl}?creatorId=1&rowStatus=NORMAL&limit=${limit}&offset=${memos.length}`;
+      if (currentTag) {
+        url += `&tag=${encodeURIComponent(currentTag)}`;
+      }
+
+      
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.length < limit) {
+        setHasMore(false);
+      }
+
+      setMemos(prev => [...prev, ...data]);
+    } catch (error) {
+      console.error('Error loading more memos:', error);
     } finally {
       setLoading(false);
     }
@@ -218,40 +310,19 @@ export default function MemosClient() {
     );
   };
 
-  // 清除筛选
-  const clearFilter = () => {
-    setCurrentTag('');
-    setMemos([]);
-    setPage(1);
-    setHasMore(true);
-  };
-
-  // 标签筛选
-  const filterByTag = (tag) => {
-    if (currentTag === tag) {
-      clearFilter();
-      return;
-    }
-
-    setCurrentTag(tag);
-    setMemos([]);
-    setPage(1);
-    setHasMore(true);
-  };
-
   // 设置无限滚动
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading) {
-          loadMemos();
+          loadMore();
         }
       },
       { threshold: 1.0 }
     );
 
-    if (loadingRef.current) {
-      observer.observe(loadingRef.current);
+    if (lastMemoRef.current) {
+      observer.observe(lastMemoRef.current);
     }
 
     observerRef.current = observer;
@@ -263,16 +334,8 @@ export default function MemosClient() {
     };
   }, [loading, hasMore]);
 
-  // 初始加载
-  useEffect(() => {
-    loadMemos();
-  }, [currentTag]);
-
   // 初始化
   useEffect(() => {
-    // 将 filterByTag 函数添加到 window 对象
-    window.filterByTag = filterByTag;
-
     // 加载并初始化 highlight.js
     const loadHighlight = async () => {
       try {
@@ -291,12 +354,12 @@ export default function MemosClient() {
     loadHighlight();
 
     return () => {
-      delete window.filterByTag;
       // 清理所有 meting-js 实例
       document.querySelectorAll('meting-js').forEach((el) => {
         try {
-          if (el && el.player && typeof el.player.destroy === 'function') {
+          if (el && el.player) {
             el.player.destroy();
+            el.player = null;
           }
         } catch (err) {
           console.error('Error destroying meting-js instance:', err);
@@ -359,7 +422,7 @@ export default function MemosClient() {
         </div>
       )}
 
-      <div ref={loadingRef} className="h-4" />
+      <div ref={lastMemoRef} className="h-4" />
     </div>
   );
 }
