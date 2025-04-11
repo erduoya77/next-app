@@ -8,8 +8,24 @@ export default function Comments() {
   const pathname = usePathname();
   const containerRef = useRef(null);
   const initialized = useRef(false);
+  
+  // 从环境变量获取Twikoo服务器地址
+  const twikooEnvId = process.env.NEXT_PUBLIC_TWIKOO_ENV_ID || 'https://twikoo.erduoya.top/';
+
+  // 定义不需要评论的页面路径
+  const excludedPaths = ['/', '/search', '/tags'];
+
+  // 检查当前路径是否需要显示评论
+  const shouldShowComments = !excludedPaths.some(path => 
+    pathname === path || pathname.startsWith(`${path}/`)
+  );
 
   useEffect(() => {
+    // 如果当前页面不需要显示评论，则不初始化
+    if (!shouldShowComments) {
+      return;
+    }
+
     // 如果已经初始化过，先清除现有评论区
     if (initialized.current) {
       const container = containerRef.current;
@@ -22,7 +38,7 @@ export default function Comments() {
     const initTwikoo = () => {
       if (window.twikoo) {
         window.twikoo.init({
-          envId: 'https://twikoo.erduoya.top/',
+          envId: twikooEnvId,
           el: '#comments',
           path: pathname,
           lang: 'zh-CN',
@@ -47,7 +63,12 @@ export default function Comments() {
       window.removeEventListener('twikoo-loaded', handleTwikooLoad);
       initialized.current = false;
     };
-  }, [pathname]);
+  }, [pathname, shouldShowComments, twikooEnvId]);
+
+  // 如果当前页面不需要显示评论，则不渲染组件
+  if (!shouldShowComments) {
+    return null;
+  }
 
   return (
     <>

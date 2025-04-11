@@ -3,6 +3,28 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import PostList from '@/app/components/PostList'
+import { searchPosts as searchPostsApi } from '@/lib/api'
+
+// 创建一个客户端组件包装器，用于调用服务端函数
+const searchPostsClient = async (params) => {
+  try {
+    // 在客户端模式下，调用API路由
+    const queryParams = new URLSearchParams()
+    if (params.query) queryParams.append('q', params.query)
+    if (params.tag) queryParams.append('tag', params.tag)
+    if (params.category) queryParams.append('category', params.category)
+    queryParams.append('type', 'post')
+    
+    const response = await fetch(`/api/search?${queryParams.toString()}`)
+    if (!response.ok) {
+      throw new Error(`搜索请求失败: ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error('搜索出错:', error)
+    return []
+  }
+}
 
 // 将主要内容提取到一个单独的组件中
 function SearchContent() {
@@ -32,7 +54,7 @@ function SearchContent() {
 
   // 搜索文章
   useEffect(() => {
-    const searchPosts = async () => {
+    const fetchPosts = async () => {
       if (!searchTerm && !selectedTag && !selectedCategory) {
         setPosts([])
         setHasSearched(false)
@@ -43,17 +65,11 @@ function SearchContent() {
       setHasSearched(true)
       
       try {
-        const queryParams = new URLSearchParams()
-        if (searchTerm) queryParams.append('q', searchTerm)
-        if (selectedTag) queryParams.append('tag', selectedTag)
-        if (selectedCategory) queryParams.append('category', selectedCategory)
-        queryParams.append('type', 'post') // 只搜索文章类型
-        
-        const response = await fetch(`/api/search?${queryParams.toString()}`)
-        if (!response.ok) {
-          throw new Error(`搜索请求失败: ${response.status}`)
-        }
-        const data = await response.json()
+        const data = await searchPostsClient({
+          query: searchTerm,
+          tag: selectedTag,
+          category: selectedCategory
+        })
         setPosts(data)
       } catch (error) {
         console.error('搜索出错:', error)
@@ -62,7 +78,7 @@ function SearchContent() {
         setLoading(false)
       }
     }
-    searchPosts()
+    fetchPosts()
   }, [searchTerm, selectedTag, selectedCategory])
 
   // 处理标签点击
@@ -128,7 +144,7 @@ function SearchContent() {
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                   找到 {posts.length} 篇相关文章
                 </div>
-                <PostList posts={posts} />
+                <PostList posts={posts} simplifiedView={true} />
               </div>
             ) : (
               <div className="text-center text-gray-500 dark:text-gray-400 py-12">

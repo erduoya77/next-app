@@ -1,23 +1,11 @@
 import Link from 'next/link'
+import { getAllTags } from '@/lib/api'
 
 export const revalidate = 3600 // 每小时重新验证
 
-async function getTagsFromBackend() {
-  try {
-    const response = await fetch('/api/tags')
-    if (!response.ok) {
-      throw new Error('获取标签失败')
-    }
-    return await response.json()
-  } catch (error) {
-    console.error('获取标签失败:', error)
-    return {}
-  }
-}
-
 export default async function TagsPage() {
-  const tags = await getTagsFromBackend()
-  const maxCount = Math.max(...Object.values(tags))
+  const tags = await getAllTags()
+  const maxCount = Object.values(tags).length > 0 ? Math.max(...Object.values(tags)) : 0
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -25,7 +13,7 @@ export default async function TagsPage() {
       <div className="flex flex-wrap gap-4">
         {Object.entries(tags).map(([tag, count]) => {
           // 计算字体大小，基于文章数量
-          const fontSize = Math.max(1, Math.min(2, 1 + (count / maxCount)))
+          const fontSize = Math.max(1, Math.min(2, 1 + (count / (maxCount || 1))))
           
           return (
             <Link
