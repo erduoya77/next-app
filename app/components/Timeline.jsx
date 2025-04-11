@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function Timeline({ posts }) {
   // 按年份和月份对文章进行分组
   const groupedPosts = posts.reduce((acc, post) => {
-    const date = new Date(post.metadata.date)
+    const date = new Date(post.date)
     const year = date.getFullYear()
     const month = date.getMonth() + 1
 
@@ -37,17 +37,17 @@ export default function Timeline({ posts }) {
                 <div className="space-y-4 pl-6">
                   {monthPosts.map(post => (
                     <Link
-                      key={post.metadata.slug}
-                      href={`/posts/${post.metadata.slug}`}
+                      key={post.slug}
+                      href={`/posts/${post.slug}`}
                       className="block group"
                     >
                       <div className="flex items-center gap-4">
                         <time className="text-sm text-gray-500 w-32">
-                          {new Date(post.metadata.date).toLocaleDateString('zh-CN')}
+                          {new Date(post.date).toLocaleDateString('zh-CN')}
                         </time>
                         <div className="flex-1">
                           <h4 className="text-lg group-hover:text-blue-600 transition-colors duration-200">
-                            {post.metadata.title}
+                            {post.title}
                           </h4>
                         </div>
                       </div>

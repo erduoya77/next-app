@@ -1,10 +1,12 @@
-import { getAllPosts } from '@/lib/api'
+import { getAllPostsFromBackend } from '@/lib/api'
 import PostGrid from './components/PostGrid'
 
+export const revalidate = 3600 // 每小时重新验证
+
 export default async function Home() {
-  
-  const posts = await getAllPosts()
-  
+  const allPosts = await getAllPostsFromBackend()
+  // 只显示类型为post的文章
+  const posts = allPosts.filter(post => post.type === 'post')
 
   return (
     <main className="container mx-auto px-4 py-8">

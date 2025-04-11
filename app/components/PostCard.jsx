@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 export default function PostCard({ post }) {
   const router = useRouter()
-  const { title, date, tags, backImg, category, slug } = post.metadata
+  const { title, date, tags, backImg, category, slug, type = 'post' } = post
 
   const handleTagClick = (e, tag) => {
     e.preventDefault()
@@ -31,9 +31,19 @@ export default function PostCard({ post }) {
     return []
   }
 
+  // 根据类型生成链接
+  const getLink = () => {
+    if (type === 'page') {
+      return `/${slug}` // 页面直接使用 slug 作为路径
+    }
+    return `/posts/${slug}` // 文章使用 /posts/slug 路径
+  }
+
   return (
-    <div className="block bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <Link href={`/posts/${slug}`} className="block">
+    <div className={`block bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 overflow-hidden hover:shadow-lg transition-shadow duration-300 ${
+      type === 'page' ? 'border-l-4 border-blue-500' : ''
+    }`}>
+      <Link href={getLink()} className="block">
         {backImg && (
           <div className="relative w-full">
             <Image
@@ -48,24 +58,35 @@ export default function PostCard({ post }) {
         )}
         
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-2 line-clamp-2 text-gray-900 dark:text-gray-100">{title}</h2>
-          
-          <div className="flex flex-wrap gap-2 mb-2">
-            {parseTags(tags).map(tag => (
-              <button
-                key={tag}
-                onClick={(e) => handleTagClick(e, tag)}
-                className="text-sm px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
-              >
-                {tag}
-              </button>
-            ))}
+          <div className="flex justify-between items-start mb-2">
+            <h2 className="text-xl font-bold line-clamp-2 text-gray-900 dark:text-gray-100">{title}</h2>
+            {type === 'page' && (
+              <span className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                页面
+              </span>
+            )}
           </div>
+          
+          {type === 'post' && (
+            <>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {parseTags(tags).map(tag => (
+                  <button
+                    key={tag}
+                    onClick={(e) => handleTagClick(e, tag)}
+                    className="text-sm px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
 
-          {category && (
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              分类：{category}
-            </div>
+              {category && (
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  分类：{category}
+                </div>
+              )}
+            </>
           )}
 
           <div className="text-sm text-gray-500 dark:text-gray-400">

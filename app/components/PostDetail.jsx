@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -10,35 +10,39 @@ import { useRouter } from 'next/navigation'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash'
+import Link from 'next/link'
 // ... 其他语言导入保持不变
 
 // 注册语言保持不变
 SyntaxHighlighter.registerLanguage('bash', bash)
 // ... 其他语言注册保持不变
 
+// 统一的ID生成函数
+const generateId = (text) => {
+  return text
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .replace(/--+/g, '-')
+}
+
 export default function PostDetail({ post }) {
   const [headings, setHeadings] = useState([])
   const router = useRouter()
+  const contentRef = useRef(null)
 
   useEffect(() => {
     // 延迟执行，确保 ReactMarkdown 渲染完成
     const timer = setTimeout(() => {
-      const articleHeadings = document.querySelectorAll('.prose h1, .prose h2, .prose h3')
+      if (!contentRef.current) return
+      
+      const articleHeadings = contentRef.current.querySelectorAll('h1, h2, h3')
       
       const headingsData = Array.from(articleHeadings).map(heading => {
-        // 生成更可靠的ID
-        const cleanId = heading.textContent
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
-          .replace(/^-|-$/g, '')
-          .replace(/--+/g, '-')
-        
-        // 设置标题的ID
-        heading.id = cleanId // 直接设置id属性
-        
         return {
-          id: cleanId,
+          id: heading.id,
           text: heading.textContent,
           level: parseInt(heading.tagName[1])
         }
@@ -66,9 +70,11 @@ export default function PostDetail({ post }) {
     return <img src={imageSrc} alt={alt} className="rounded-lg" />
   }
 
-  const { metadata, content } = post
-  const { title, date, tags = [], category } = metadata
+  if (!post) {
+    return null
+  }
 
+  const { title, date, tags = [], category, content, type = 'post' } = post
   
   return (
     <div className="relative max-w-4xl mx-auto">
@@ -77,7 +83,7 @@ export default function PostDetail({ post }) {
           <h1 className="text-4xl font-bold mb-4">{title}</h1>
           <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400 mb-4">
             <time dateTime={date}>{new Date(date).toLocaleDateString('zh-CN')}</time>
-            {metadata.type == 'post' && category && (
+            {type === 'post' && category && (
               <>
                 <span>·</span>
                 <button 
@@ -104,33 +110,21 @@ export default function PostDetail({ post }) {
           )}
         </header>
 
-        <div className="prose dark:prose-invert max-w-none leading-relaxed">
+        <div ref={contentRef} className="prose dark:prose-invert max-w-none leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
             rehypePlugins={[rehypeRaw]}
             components={{
               h1: ({ node, children, ...props }) => {
-                const id = children.toString()
-                  .toLowerCase()
-                  .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
-                  .replace(/^-|-$/g, '')
-                  .replace(/--+/g, '-')
+                const id = generateId(children)
                 return <h1 id={id} className="text-5xl font-bold mb-6" {...props}>{children}</h1>
               },
               h2: ({ node, children, ...props }) => {
-                const id = children.toString()
-                  .toLowerCase()
-                  .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
-                  .replace(/^-|-$/g, '')
-                  .replace(/--+/g, '-')
+                const id = generateId(children)
                 return <h2 id={id} className="text-4xl font-semibold mb-5" {...props}>{children}</h2>
               },
               h3: ({ node, children, ...props }) => {
-                const id = children.toString()
-                  .toLowerCase()
-                  .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, '-')
-                  .replace(/^-|-$/g, '')
-                  .replace(/--+/g, '-')
+                const id = generateId(children)
                 return <h3 id={id} className="text-3xl font-medium mb-4" {...props}>{children}</h3>
               },
               img: CustomImage,
@@ -213,6 +207,7 @@ export default function PostDetail({ post }) {
 
       {headings.length > 0 && (
         <div className="fixed top-24 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden xl:block">
+          <h4 className="text-lg font-semibold mb-3">目录</h4>
           <nav className="space-y-2">
             {headings.map((heading, index) => (
               <a
@@ -222,15 +217,14 @@ export default function PostDetail({ post }) {
                   e.preventDefault()
                   const target = document.getElementById(heading.id)
                   if (target) {
+                    // 使用平滑滚动
                     target.scrollIntoView({ 
                       behavior: 'smooth',
                       block: 'start'
                     })
-                  } else {
-                    // 目标元素未找到，无需额外处理
                   }
                 }}
-                className={`block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 ${
+                className={`block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 truncate ${
                   heading.level === 2 ? 'pl-4' : heading.level === 3 ? 'pl-8' : ''
                 }`}
               >

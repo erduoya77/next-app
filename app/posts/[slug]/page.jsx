@@ -1,11 +1,12 @@
-import { getPost } from '@/lib/api'
+import { getPostFromBackend } from '@/lib/api'
 import PostDetail from '@/app/components/PostDetail'
 import { notFound } from 'next/navigation'
 
 export const dynamicParams = true
 
 export async function generateMetadata({ params }) {
-  const post = await getPost(params.slug)
+  params = await params
+  const post = await getPostFromBackend(params.slug)
   
   if (!post) {
     return {
@@ -15,15 +16,16 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${post.metadata.title} - 我的博客`,
-    description: post.metadata.description || post.metadata.title
+    title: `${post.title} - 我的博客`,
+    description: post.excerpt || post.title
   }
 }
 
 export default async function PostPage({ params }) {
-  const post = await getPost(params.slug)
+  params = await params
+  const post = await getPostFromBackend(params.slug)
   
-  if (!post) {
+  if (!post || post.type !== 'post') {
     notFound()
   }
 

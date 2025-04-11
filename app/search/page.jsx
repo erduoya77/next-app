@@ -10,7 +10,6 @@ function SearchContent() {
   const [selectedTag, setSelectedTag] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [posts, setPosts] = useState([])
-  const [tags, setTags] = useState({})
   const [loading, setLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const searchParams = useSearchParams()
@@ -48,12 +47,17 @@ function SearchContent() {
         if (searchTerm) queryParams.append('q', searchTerm)
         if (selectedTag) queryParams.append('tag', selectedTag)
         if (selectedCategory) queryParams.append('category', selectedCategory)
+        queryParams.append('type', 'post') // 只搜索文章类型
         
         const response = await fetch(`/api/search?${queryParams.toString()}`)
+        if (!response.ok) {
+          throw new Error(`搜索请求失败: ${response.status}`)
+        }
         const data = await response.json()
         setPosts(data)
       } catch (error) {
         console.error('搜索出错:', error)
+        setPosts([])
       } finally {
         setLoading(false)
       }
@@ -75,7 +79,7 @@ function SearchContent() {
         <div className="max-w-3xl mx-auto pt-20 pb-12">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-              搜索
+              搜索文章
             </h1>
           </div>
 
@@ -90,7 +94,7 @@ function SearchContent() {
                   setSelectedCategory('')
                 }
               }}
-              placeholder="输入关键词搜索..."
+              placeholder="输入关键词搜索文章..."
               className="w-full p-4 pl-12 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-2xl 
                        bg-white dark:bg-gray-800 shadow-sm focus:outline-none focus:border-blue-500 
                        dark:focus:border-blue-400 transition-colors"
@@ -109,24 +113,6 @@ function SearchContent() {
               />
             </svg>
           </div>
-
-          {Object.keys(tags).length > 0 && (
-            <div className="flex flex-wrap gap-2 justify-center mb-12">
-              {Object.entries(tags).map(([tag, count]) => (
-                <button
-                  key={tag}
-                  onClick={() => handleTagClick(tag)}
-                  className={`px-4 py-2 rounded-full text-sm transition-all
-                    ${selectedTag === tag
-                      ? 'bg-blue-500 text-white shadow-md scale-105'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    } border border-gray-200 dark:border-gray-700`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          )}
 
           <div className="mt-8">
             {!hasSearched ? (
