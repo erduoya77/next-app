@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 导入主题变量 */
+@import './theme.css';
+
 @layer base {
   body {
     @apply transition-colors duration-300;
@@ -34,16 +37,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 17, 24, 39;
-    --background-end-rgb: 17, 24, 39;
-  }
 }
 
 body {
@@ -280,6 +273,10 @@ meting-js .aplayer .aplayer-lrc {
 
 .article a {
   @apply text-blue-600 dark:text-blue-400 underline hover:no-underline;
+  display: inline;
+  max-width: none;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .dark .article a {
@@ -493,4 +490,120 @@ meting-js .aplayer .aplayer-lrc {
 
 .dark .hover\:shadow-lg:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 确保特定链接样式不受全局样式干扰 */
+a.custom-link,
+.custom-link a,
+.btn-link,
+nav a,
+header a,
+footer a {
+  display: inline !important;
+  max-width: none !important;
+  word-break: normal !important;
+}
+
+/* 侧边栏菜单悬停效果 */
+aside nav ul li a,
+aside nav ul li button {
+  @apply transition-all duration-200;
+}
+
+aside nav ul li a:hover,
+aside nav ul li button:hover {
+  @apply translate-y-[-2px];
+}
+
+/* 确保文章大纲和时间轴链接样式不会被篡改 */
+.timeline a,
+nav.space-y-2 a,
+nav a.block,
+aside nav a {
+  color: var(--text-primary) !important;
+  text-decoration: none !important;
+  display: block !important;
+  max-width: none !important;
+}
+
+.timeline a:hover,
+nav.space-y-2 a:hover,
+nav a.block:hover,
+aside nav a:hover {
+  color: var(--theme-color) !important;
+}
+
+.dark .timeline a,
+.dark nav.space-y-2 a,
+.dark nav a.block,
+.dark aside nav a {
+  color: var(--text-secondary) !important;
+}
+
+.dark .timeline a:hover,
+.dark nav.space-y-2 a:hover,
+.dark nav a.block:hover,
+.dark aside nav a:hover {
+  color: var(--color-primary-light) !important;
+}
+
+/* 文章目录样式优化 */
+.fixed.max-h-\[calc\(100vh-10rem\)\] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.fixed.max-h-\[calc\(100vh-10rem\)\]::-webkit-scrollbar {
+  width: 4px;
+}
+
+.fixed.max-h-\[calc\(100vh-10rem\)\]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.fixed.max-h-\[calc\(100vh-10rem\)\]::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+.dark .fixed.max-h-\[calc\(100vh-10rem\)\]::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 114, 128, 0.5);
+}
+
+/* 增加内容重叠的标题粘性效果 */
+.fixed.max-h-\[calc\(100vh-10rem\)\] h4.sticky {
+  z-index: 10;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .fixed.max-h-\[calc\(100vh-10rem\)\] h4.sticky {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保暗色模式下背景颜色正确应用到所有区域 */
+body.dark,
+.dark body,
+.dark div,
+.dark section,
+.dark main,
+.dark aside,
+.dark article {
+  background-color: inherit;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--bg-page) !important;
+}
+
+.dark .min-h-screen {
+  background-color: var(--bg-page);
+}
+
+.dark .container {
+  background-color: var(--bg-page);
+}
+
+/* 针对搜索页面的特别优化 */
+.dark .search-page-element {
+  background-color: var(--bg-page) !important;
 }

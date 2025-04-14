@@ -11,7 +11,7 @@ function parseTags(tagsString) {
 
 export default function PostList({ posts, simplifiedView = false }) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gray-50 dark:bg-gray-900">
       {posts.map((post) => (
         <article
           key={post.slug}
@@ -61,7 +61,7 @@ export default function PostList({ posts, simplifiedView = false }) {
                 <Link
                   key={tag}
                   href={`/tags/${encodeURIComponent(tag)}`}
-                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-blue-500 hover:text-white transition-colors"
+                  className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors"
                 >
                   {tag}
                 </Link>

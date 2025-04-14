@@ -27,8 +27,9 @@
 
   /* 移动端链接样式优化 */
   .prose a {
-    word-break: break-all;
+    /* word-break: break-all; */ /* 这可能导致链接在不适当的位置断开 */
     overflow-wrap: break-word;
+    word-wrap: break-word; /* 为兼容性添加 */
     hyphens: auto;
   }
 }
@@ -36,8 +37,9 @@
 /* 全局链接样式 */
 .prose a {
   word-wrap: break-word;
-  max-width: 100%;
-  display: inline-block;
+  /* 移除强制设置的最大宽度和显示模式，这些可能导致局部样式失效 */
+  /* max-width: 100%; */
+  /* display: inline-block; */
 }
 
 /* 禁用文章内容中的图片点击效果 */

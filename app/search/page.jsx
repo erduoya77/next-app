@@ -91,8 +91,8 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto pt-20 pb-12">
+      <div className="container mx-auto px-4 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-3xl mx-auto pt-20 pb-12 bg-gray-50 dark:bg-gray-900">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-100">
               搜索文章
@@ -113,10 +113,10 @@ function SearchContent() {
               placeholder="输入关键词搜索文章..."
               className="w-full p-4 pl-12 text-lg border-2 border-gray-200 dark:border-gray-700 rounded-2xl 
                        bg-white dark:bg-gray-800 shadow-sm focus:outline-none focus:border-blue-500 
-                       dark:focus:border-blue-400 transition-colors"
+                       dark:focus:border-blue-400 transition-colors text-gray-800 dark:text-gray-100"
             />
             <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 dark:text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -130,7 +130,7 @@ function SearchContent() {
             </svg>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 bg-gray-50 dark:bg-gray-900">
             {!hasSearched ? (
               <div className="text-center text-gray-500 dark:text-gray-400 py-12">
                 开始输入关键词或选择标签进行搜索
@@ -162,7 +162,9 @@ function SearchContent() {
 export default function SearchPage() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">加载搜索数据中...</div>}>
-      <SearchContent />
+      <div className="search-page-element">
+        <SearchContent />
+      </div>
     </Suspense>
   )
 }

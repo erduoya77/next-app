@@ -1,15 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { config } from '@/config/config';
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon, ChevronUpIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
-export default function Sidebar({ tags, directories, social, footer }) {
+function Sidebar({ tags, directories, social, footer }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openMenus, setOpenMenus] = useState({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 使用 useCallback 优化函数
+  const toggleMenu = useCallback((menuName) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [menuName]: !prev[menuName],
+    }));
+  }, []);
+
+  const handleMobileMenuClick = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev);
+  }, []);
+
+  const handleOverlayClick = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
 
   // 监听窗口大小变化
   useEffect(() => {
@@ -33,23 +49,6 @@ export default function Sidebar({ tags, directories, social, footer }) {
       clearTimeout(timeoutId);
     };
   }, []);
-
-  const toggleMenu = (menuName) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [menuName]: !prev[menuName],
-    }));
-  };
-
-  // 处理移动端菜单点击
-  const handleMobileMenuClick = () => {
-    setIsMobileMenuOpen(prev => !prev);
-  };
-
-  // 处理遮罩层点击
-  const handleOverlayClick = () => {
-    setIsMobileMenuOpen(false);
-  };
 
   return (
     <>
@@ -257,10 +256,9 @@ export default function Sidebar({ tags, directories, social, footer }) {
           )}
         </div>
       </aside>
-
-      <div className={`transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
-        <main className="p-8">{/* 主内容 */}</main>
-      </div>
     </>
   );
 }
+
+// 使用 memo 优化组件
+export default memo(Sidebar); 

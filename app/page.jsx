@@ -1,5 +1,16 @@
 import { getAllPostsFromBackend } from '@/lib/api'
-import PostGrid from './components/PostGrid'
+import dynamic from 'next/dynamic'
+
+// 使用动态导入优化加载
+const PostGrid = dynamic(() => import('./components/posts/PostGrid'), {
+  loading: () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+      {[...Array(6)].map((_, i) => (
+        <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+      ))}
+    </div>
+  )
+})
 
 export const revalidate = 3600 // 每小时重新验证
 

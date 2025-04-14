@@ -1,10 +1,11 @@
 'use client'
 
+import { memo, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-export default function PostCard({ post }) {
+function PostCard({ post }) {
   const router = useRouter()
   const { title, date, tags, backImg, category, slug, type = 'post' } = post
 
@@ -22,14 +23,15 @@ export default function PostCard({ post }) {
     router.push(`/search?category=${encodedCategory}`)
   }
 
-  const parseTags = (tags) => {
+  // 使用 useMemo 优化标签解析
+  const parsedTags = useMemo(() => {
     if (!tags) return []
     if (Array.isArray(tags)) return tags
     if (typeof tags === 'string') {
       return tags.split(/[,，\s]+/).map(tag => tag.trim()).filter(Boolean)
     }
     return []
-  }
+  }, [tags])
 
   // 根据类型生成链接
   const getLink = () => {
@@ -70,7 +72,7 @@ export default function PostCard({ post }) {
           {type === 'post' && (
             <>
               <div className="flex flex-wrap gap-2 mb-2">
-                {parseTags(tags).map(tag => (
+                {parsedTags.map(tag => (
                   <button
                     key={tag}
                     onClick={(e) => handleTagClick(e, tag)}
@@ -96,4 +98,7 @@ export default function PostCard({ post }) {
       </Link>
     </div>
   )
-} 
+}
+
+// 使用 memo 优化组件，避免不必要的重渲染
+export default memo(PostCard) 

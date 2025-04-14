@@ -1,11 +1,19 @@
-import Sidebar from './components/Sidebar'
-import ViewImage from './components/ViewImage'
+import dynamic from 'next/dynamic';
 import { getDirectories, getAllTags } from '@/lib/api'
 import { config } from '@/config/config'
 import { ThemeProvider } from 'next-themes'
+import ViewImage from './components/ViewImage'
 import Toolbar from '@/app/components/Toolbar'
 import Comments from '@/app/components/Comments'
 import './styles/globals.css'
+
+// 动态导入侧边栏组件，优化首屏加载
+const Sidebar = dynamic(() => import('./components/layout/Sidebar'), {
+  ssr: true,
+  loading: () => (
+    <div className="fixed inset-y-0 left-0 w-64 bg-gray-100 dark:bg-gray-800 animate-pulse"></div>
+  )
+});
 
 export const metadata = {
   title: config.site.title,
@@ -18,7 +26,7 @@ export default async function RootLayout({ children }) {
   const tags = await getAllTags()
 
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning className="h-full">
       <head>
         <link 
           rel="stylesheet" 
@@ -39,12 +47,11 @@ export default async function RootLayout({ children }) {
           defer
         ></script>
       </head>
-      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 h-full">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem={true}
-          disableTransitionOnChange
         >
           <div className="min-h-screen">
             <Sidebar 

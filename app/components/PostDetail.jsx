@@ -206,8 +206,8 @@ export default function PostDetail({ post }) {
       </article>
 
       {headings.length > 0 && (
-        <div className="fixed top-24 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden xl:block">
-          <h4 className="text-lg font-semibold mb-3">目录</h4>
+        <div className="fixed top-24 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 hidden xl:block max-h-[calc(100vh-10rem)] overflow-auto">
+          <h4 className="text-lg font-semibold mb-3 sticky top-0 bg-white dark:bg-gray-800 py-1">目录</h4>
           <nav className="space-y-2">
             {headings.map((heading, index) => (
               <a
@@ -224,7 +224,7 @@ export default function PostDetail({ post }) {
                     })
                   }
                 }}
-                className={`block text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 truncate ${
+                className={`block text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:translate-y-[-2px] transition-all duration-200 truncate ${
                   heading.level === 2 ? 'pl-4' : heading.level === 3 ? 'pl-8' : ''
                 }`}
               >

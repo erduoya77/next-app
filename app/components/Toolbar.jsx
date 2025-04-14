@@ -22,29 +22,33 @@ export default function Toolbar() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+  }
+
   if (!mounted) return null
 
   return (
     <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-4">
       <button
-        onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-        className="rounded-full bg-white p-2 shadow-lg transition-all hover:shadow-xl dark:bg-gray-800"
-        aria-label="Toggle theme"
+        onClick={toggleTheme}
+        className="rounded-full bg-white p-2 shadow-lg transition-all hover:shadow-xl dark:bg-gray-800 dark:border dark:border-gray-700 dark:hover:bg-gray-700"
+        aria-label="切换主题"
       >
         {resolvedTheme === 'dark' ? (
-          <SunIcon className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+          <SunIcon className="h-6 w-6 text-yellow-500" />
         ) : (
-          <MoonIcon className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+          <MoonIcon className="h-6 w-6 text-gray-700" />
         )}
       </button>
 
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          className="rounded-full bg-white p-2 shadow-lg transition-all hover:shadow-xl dark:bg-gray-800"
-          aria-label="Back to top"
+          className="rounded-full bg-white p-2 shadow-lg transition-all hover:shadow-xl dark:bg-gray-800 dark:border dark:border-gray-700 dark:hover:bg-gray-700"
+          aria-label="返回顶部"
         >
-          <ArrowUpIcon className="h-6 w-6 text-gray-800 dark:text-gray-200" />
+          <ArrowUpIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
         </button>
       )}
     </div>

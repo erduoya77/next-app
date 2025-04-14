@@ -1,0 +1,126 @@
+/* 主题变量文件 - 集中管理应用的颜色和样式 */
+
+:root {
+  /* 基础颜色 */
+  --color-primary: #1989fa;
+  --color-primary-light: #4da3ff;
+  --color-primary-dark: #0b6ad1;
+  
+  --color-secondary: #64748b;
+  --color-secondary-light: #94a3b8;
+  --color-secondary-dark: #475569;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* 页面背景 */
+  --bg-page: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f9fafb;
+  
+  /* 文本颜色 */
+  --text-primary: #171717;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  /* 边框 */
+  --border-color: #e5e7eb;
+  --border-width: 1px;
+  --border-radius: 0.5rem;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* 过渡 */
+  --transition-default: all 0.2s ease;
+  --transition-slow: all 0.3s ease;
+}
+
+.dark {
+  /* 基础颜色（暗色模式） */
+  --color-primary: #60a5fa;
+  --color-primary-light: #93c5fd;
+  --color-primary-dark: #3b82f6;
+  
+  --color-secondary: #94a3b8;
+  --color-secondary-light: #cbd5e1;
+  --color-secondary-dark: #64748b;
+  
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-info: #60a5fa;
+  
+  /* 页面背景（暗色模式） */
+  --bg-page: #111827;
+  --bg-card: #1f2937;
+  --bg-card-alt: #374151;
+  
+  /* 文本颜色（暗色模式） */
+  --text-primary: #f9fafb;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #d1d5db;
+  --text-muted: #9ca3af;
+  
+  /* 边框（暗色模式） */
+  --border-color: #374151;
+  
+  /* 阴影（暗色模式） */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+}
+
+/* 应用主题到常用元素 */
+.bg-primary { background-color: var(--color-primary); }
+.text-primary { color: var(--text-primary); }
+.border-default { border: var(--border-width) solid var(--border-color); }
+.shadow-default { box-shadow: var(--shadow); }
+
+/* 卡片通用样式 */
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+}
+
+.card-hover {
+  transition: var(--transition-default);
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* 按钮通用样式 */
+.btn {
+  border-radius: var(--border-radius);
+  transition: var(--transition-default);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* 链接通用样式 - 仅应用于主内容区域，避免影响导航菜单 */
+main a, article a, .content a {
+  color: var(--color-primary);
+  transition: var(--transition-default);
+}
+
+main a:hover, article a:hover, .content a:hover {
+  color: var(--color-primary-dark);
+} 
