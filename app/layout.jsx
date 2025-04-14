@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import { getDirectories, getAllTags } from '@/lib/api'
 import { config } from '@/config/config'
 import { ThemeProvider } from 'next-themes'
-import ViewImage from './components/ViewImage'
 import Toolbar from '@/app/components/Toolbar'
 import Comments from '@/app/components/Comments'
 import './styles/globals.css'
@@ -18,6 +17,14 @@ const Sidebar = dynamic(() => import('./components/layout/Sidebar'), {
 export const metadata = {
   title: config.site.title,
   description: config.site.description,
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_BASE_URL,
+    types: {
+      'application/rss+xml': [
+        { url: 'api/rss', title: `${config.site.title} RSS Feed` }
+      ]
+    }
+  }
 }
 
 export default async function RootLayout({ children }) {
@@ -39,6 +46,17 @@ export default async function RootLayout({ children }) {
         <link 
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.css"
+        />
+        <link 
+          rel="alternate" 
+          type="application/rss+xml" 
+          title={`${config.site.title} RSS Feed`} 
+          href="/api/rss" 
+        />
+        <link 
+          rel="sitemap" 
+          type="application/xml" 
+          href="/sitemap.xml" 
         />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.10.1/APlayer.min.js" />
@@ -65,7 +83,6 @@ export default async function RootLayout({ children }) {
               <Comments />
             </main>
           </div>
-          <ViewImage />
           <Toolbar />
         </ThemeProvider>
       </body>

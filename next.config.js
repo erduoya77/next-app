@@ -23,6 +23,26 @@ const nextConfig = {
     })
     return config
   },
+  // 添加重定向配置
+  async redirects() {
+    return [
+      {
+        source: '/rss',
+        destination: '/api/rss',
+        permanent: true,
+      },
+      {
+        source: '/feed',
+        destination: '/api/rss',
+        permanent: true,
+      },
+      {
+        source: '/rss.xml',
+        destination: '/api/rss',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig 

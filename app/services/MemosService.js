@@ -1,8 +1,14 @@
 import { logError, handleApiResponse } from './ErrorService';
 
-// 基础 URL 配置
-const baseUrl = 'https://memos.erduoya.top/api/v1/memo';
+// 基础 URL 配置 - 解决路径重复问题
+const MEMOS_API_BASE = process.env.NEXT_PUBLIC_MEMOS_API_URL || 'https://memos.erduoya.top';
+const baseUrl = `${MEMOS_API_BASE}/api/v1/memo`;
 const defaultLimit = 10;
+
+// 获取 memos 资源的基础 URL，用于图片和文件
+export const getResourceUrl = (resourceId) => {
+  return `${MEMOS_API_BASE}/o/r/${resourceId}`;
+};
 
 // 获取备忘录列表
 export async function fetchMemos(options = {}) {
@@ -13,6 +19,8 @@ export async function fetchMemos(options = {}) {
     if (tag) {
       url += `&tag=${encodeURIComponent(tag)}`;
     }
+    
+    console.log('API请求URL:', url); // 添加日志用于调试
     
     const response = await fetch(url);
     const data = await handleApiResponse(response);

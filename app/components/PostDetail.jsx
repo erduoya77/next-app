@@ -11,7 +11,12 @@ import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/prism/bash'
 import Link from 'next/link'
-// ... 其他语言导入保持不变
+import dynamic from 'next/dynamic'
+
+// 动态导入 ImagePreview 组件以优化客户端加载
+const ImagePreview = dynamic(() => import('./ui/ImagePreview'), {
+  ssr: false,
+});
 
 // 注册语言保持不变
 SyntaxHighlighter.registerLanguage('bash', bash)
@@ -30,8 +35,14 @@ const generateId = (text) => {
 
 export default function PostDetail({ post }) {
   const [headings, setHeadings] = useState([])
+  const [showImagePreview, setShowImagePreview] = useState(false)
+  const [previewImageUrl, setPreviewImageUrl] = useState('')
   const router = useRouter()
   const contentRef = useRef(null)
+  const imageUrlsRef = useRef([]) // 用于存储所有图片URL
+  const currentImageIndexRef = useRef(0) // 当前预览的图片索引
+  // 获取基础URL
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
 
   useEffect(() => {
     // 延迟执行，确保 ReactMarkdown 渲染完成
@@ -48,6 +59,10 @@ export default function PostDetail({ post }) {
         }
       })
       setHeadings(headingsData)
+
+      // 收集所有图片URL
+      const images = contentRef.current.querySelectorAll('img')
+      imageUrlsRef.current = Array.from(images).map(img => img.src)
     }, 1000) // 增加延迟时间到1000ms
 
     return () => clearTimeout(timer)
@@ -62,12 +77,50 @@ export default function PostDetail({ post }) {
     })
   }
 
+  // 处理关闭预览
+  const handleClosePreview = () => {
+    setShowImagePreview(false)
+  }
+
+  // 自定义图片组件
   const CustomImage = ({ src, alt }) => {
     let imageSrc = src
     if (!src.startsWith('http') && !src.startsWith('/')) {
-      imageSrc = `/posts/${post.slug}/images/${src.replace('images/', '')}`
+      // 使用环境变量中的baseUrl
+      imageSrc = `${baseUrl}/posts/${post.slug}/images/${src.replace('images/', '')}`
+    } else if (src.startsWith('/') && !src.startsWith('//')) {
+      // 处理绝对路径但不是协议相对URL的情况
+      imageSrc = `${baseUrl}${src}`
     }
-    return <img src={imageSrc} alt={alt} className="rounded-lg" />
+
+    // 处理图片点击
+    const handleImageClick = (e) => {
+      e.preventDefault()
+      // 找出当前图片在图片数组中的索引
+      const index = imageUrlsRef.current.findIndex(url => url === imageSrc)
+      if (index !== -1) {
+        currentImageIndexRef.current = index
+      } else {
+        // 如果找不到图片，收集所有图片并重新找索引
+        // 这可能发生在动态加载的情况下
+        const images = contentRef.current.querySelectorAll('img')
+        imageUrlsRef.current = Array.from(images).map(img => img.src)
+        // 重新找索引
+        const newIndex = imageUrlsRef.current.findIndex(url => url === imageSrc)
+        currentImageIndexRef.current = newIndex !== -1 ? newIndex : 0
+      }
+      setPreviewImageUrl(imageSrc)
+      setShowImagePreview(true)
+    }
+
+    return (
+      <img 
+        src={imageSrc} 
+        alt={alt} 
+        className="rounded-lg cursor-pointer" 
+        onClick={handleImageClick} 
+      />
+    )
   }
 
   if (!post) {
@@ -233,6 +286,15 @@ export default function PostDetail({ post }) {
             ))}
           </nav>
         </div>
+      )}
+
+      {/* 图片预览组件 */}
+      {showImagePreview && (
+        <ImagePreview
+          images={imageUrlsRef.current}
+          initialIndex={currentImageIndexRef.current}
+          onClose={handleClosePreview}
+        />
       )}
     </div>
   )

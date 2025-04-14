@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { XMarkIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
@@ -14,14 +15,18 @@ export default function ImagePreview({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // 计算当前图片
   const currentImage = useMemo(() => {
     return images[currentIndex] || null;
   }, [images, currentIndex]);
 
-  // 动画效果，组件挂载后显示
+  // 客户端渲染处理
   useEffect(() => {
+    setMounted(true);
+    
+    // 动画效果，组件挂载后显示
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 50);
@@ -90,18 +95,19 @@ export default function ImagePreview({
     }
   };
 
-  if (!currentImage) return null;
+  if (!currentImage || !mounted) return null;
 
-  return (
+  // 创建预览内容
+  const previewContent = (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       } ${className}`}
       onClick={handleBackdropClick}
     >
       {/* 关闭按钮 */}
       <button 
-        className="absolute top-4 right-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-[60]"
+        className="absolute top-4 right-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-[1000]"
         onClick={handleClose}
       >
         <XMarkIcon className="w-6 h-6" />
@@ -111,7 +117,7 @@ export default function ImagePreview({
       {showNavigation && images.length > 1 && (
         <>
           <button 
-            className={`absolute left-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-[60] ${
+            className={`absolute left-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-[1000] ${
               currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={handlePrev}
@@ -121,7 +127,7 @@ export default function ImagePreview({
           </button>
           
           <button 
-            className={`absolute right-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-[60] ${
+            className={`absolute right-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-[1000] ${
               currentIndex === images.length - 1 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={handleNext}
@@ -165,4 +171,7 @@ export default function ImagePreview({
       </div>
     </div>
   );
+
+  // 使用 createPortal 将组件渲染到 document.body
+  return createPortal(previewContent, document.body);
 } 
