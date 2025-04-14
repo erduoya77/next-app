@@ -20,8 +20,6 @@ export async function fetchMemos(options = {}) {
       url += `&tag=${encodeURIComponent(tag)}`;
     }
     
-    console.log('API请求URL:', url); // 添加日志用于调试
-    
     const response = await fetch(url);
     const data = await handleApiResponse(response);
     

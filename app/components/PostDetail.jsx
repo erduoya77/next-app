@@ -43,6 +43,8 @@ export default function PostDetail({ post }) {
   const currentImageIndexRef = useRef(0) // 当前预览的图片索引
   // 获取基础URL
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+  // 获取API基础URL
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     // 延迟执行，确保 ReactMarkdown 渲染完成
@@ -86,8 +88,14 @@ export default function PostDetail({ post }) {
   const CustomImage = ({ src, alt }) => {
     let imageSrc = src
     if (!src.startsWith('http') && !src.startsWith('/')) {
-      // 使用环境变量中的baseUrl
-      imageSrc = `${baseUrl}/posts/${post.slug}/images/${src.replace('images/', '')}`
+      // 使用后端API获取图片
+      // 处理路径中的"images/"前缀
+      const cleanImagePath = src.replace('images/', '');
+      
+      // 处理API URL，移除末尾的/api以便正确构建路径
+      const baseApiUrl = apiBaseUrl.endsWith('/api') ? apiBaseUrl.slice(0, -4) : apiBaseUrl;
+      
+      imageSrc = `${baseApiUrl}/api/images/${post.slug}/${cleanImagePath}`;
     } else if (src.startsWith('/') && !src.startsWith('//')) {
       // 处理绝对路径但不是协议相对URL的情况
       imageSrc = `${baseUrl}${src}`

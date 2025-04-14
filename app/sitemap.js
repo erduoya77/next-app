@@ -25,16 +25,6 @@ export default async function sitemap() {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/categories`,
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/tags`,
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    {
       url: `${baseUrl}/gallery`,
       lastModified: new Date(),
       priority: 0.8,
