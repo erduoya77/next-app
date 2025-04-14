@@ -73,7 +73,7 @@ export default function Comments() {
   return (
     <>
       <Script
-        src="https://cdn.jsdelivr.net/npm/twikoo@1.6.31/dist/twikoo.all.min.js"
+        src="https://cdn.jsdelivr.net/npm/twikoo@1.6.41/dist/twikoo.all.min.js"
         strategy="lazyOnload"
         onLoad={() => {
           window.dispatchEvent(new Event('twikoo-loaded'));
