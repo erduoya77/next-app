@@ -40,7 +40,7 @@ export default function PostCard({ post }) {
   }
 
   return (
-    <div className={`block bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 overflow-hidden hover:shadow-lg transition-shadow duration-300 ${
+    <div className={`block bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/50 dark:border dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300 ${
       type === 'page' ? 'border-l-4 border-blue-500' : ''
     }`}>
       <Link href={getLink()} className="block">
@@ -51,7 +51,7 @@ export default function PostCard({ post }) {
               alt={title}
               width={800}
               height={600}
-              className="w-full h-auto pointer-events-none"
+              className="w-full h-auto pointer-events-none dark:brightness-90"
               priority
             />
           </div>

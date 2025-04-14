@@ -14,6 +14,9 @@
   --background: #ffffff;
   --foreground: #171717;
   --theme-color: #1989fa;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 255, 255;
 }
 
 /* 暗色模式变量 */
@@ -21,6 +24,9 @@
   --background: #111827;
   --foreground: #f3f4f6;
   --theme-color: #60a5fa;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 17, 24, 39;
 }
 
 @theme inline {
@@ -34,6 +40,9 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 17, 24, 39;
+    --background-end-rgb: 17, 24, 39;
   }
 }
 
@@ -41,6 +50,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Noto Serif SC', serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
 }
 
 /* 代码块样式 */
@@ -327,4 +343,154 @@ meting-js .aplayer .aplayer-lrc {
 .memo-content {
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* 暗色主题样式 */
+.dark body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* 代码块样式 */
+.dark pre {
+  background-color: #1a1a1a;
+  color: #f8f8f2;
+}
+
+.dark code {
+  color: #f8f8f2;
+}
+
+/* 链接样式 */
+.dark a {
+  color: #60a5fa;
+}
+
+.dark a:hover {
+  color: #93c5fd;
+}
+
+/* 列表样式 */
+.dark ul, .dark ol {
+  color: #f3f4f6;
+}
+
+/* 引用样式 */
+.dark blockquote {
+  border-left-color: #4b5563;
+  color: #d1d5db;
+}
+
+/* 表格样式 */
+.dark table {
+  color: #f3f4f6;
+}
+
+.dark th, .dark td {
+  border-color: #4b5563;
+}
+
+/* 分割线样式 */
+.dark hr {
+  border-color: #4b5563;
+}
+
+/* 图片样式 */
+.dark img {
+  filter: brightness(0.9);
+}
+
+/* 滚动条样式 */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* 通用容器暗色主题样式 */
+.dark .container {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* 卡片暗色主题增强样式 */
+.dark .bg-white {
+  background-color: var(--background) !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: #1f2937 !important; 
+}
+
+.dark .bg-gray-900 {
+  background-color: #111827 !important;
+}
+
+/* 文本颜色增强 */
+.dark .text-gray-900 {
+  color: #f3f4f6 !important;
+}
+
+.dark .text-gray-100 {
+  color: #f9fafb !important;
+}
+
+.dark .text-gray-600, 
+.dark .text-gray-500, 
+.dark .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+.dark .text-gray-300 {
+  color: #d1d5db !important;
+}
+
+/* 边框颜色 */
+.dark .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+.dark .border-gray-700 {
+  border-color: #374151 !important;
+}
+
+/* 阴影效果 */
+.dark .shadow-lg,
+.dark .shadow-md,
+.dark .shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.36) !important;
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 悬停效果 */
+.dark .hover\:bg-gray-200:hover {
+  background-color: #374151 !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #1f2937 !important;
+}
+
+.dark .hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4) !important;
 }

@@ -9,7 +9,7 @@ export default async function Home() {
   const posts = allPosts.filter(post => post.type === 'post')
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="container mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">最新文章</h1>
       {posts.length > 0 ? (
         <PostGrid posts={posts} />

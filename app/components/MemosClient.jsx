@@ -455,11 +455,11 @@ export default function MemosClient() {
   return (
     <div>
       {currentTag && (
-        <div className="flex items-center gap-2 mb-4 p-2 bg-gray-100 rounded">
-          <span>当前筛选：#{currentTag}</span>
+        <div className="flex items-center gap-2 mb-4 p-2 bg-gray-100 dark:bg-gray-800 dark:border dark:border-gray-700 rounded">
+          <span className="dark:text-gray-300">当前筛选：#{currentTag}</span>
           <button
             onClick={clearFilter}
-            className="text-sm px-2 py-1 bg-white rounded hover:bg-gray-200"
+            className="text-sm px-2 py-1 bg-white dark:bg-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
           >
             清除筛选
           </button>
@@ -468,14 +468,14 @@ export default function MemosClient() {
 
       <div className="space-y-6">
         {memos.map((memo, index) => (
-          <div key={`memo-${memo.id}-${index}`} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div key={`memo-${memo.id}-${index}`} className="bg-white dark:bg-gray-800 dark:border dark:border-gray-700 rounded-lg shadow dark:shadow-gray-700/50 p-4">
             <div className="flex items-center gap-3 mb-3">
               <Image
                 src="/images/avatar.png"
                 alt="avatar"
                 width={40}
                 height={40}
-                className="rounded-full memo-avatar"
+                className="rounded-full memo-avatar dark:brightness-90"
                 no-view="true"
                 priority
               />
@@ -530,7 +530,7 @@ export default function MemosClient() {
       )}
 
       {!loading && memos.length === 0 && (
-        <div className="text-center py-4 text-gray-500">
+        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
           {currentTag ? '没有找到相关内容' : '暂无内容'}
         </div>
       )}

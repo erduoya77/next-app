@@ -56,19 +56,19 @@ export default function Sidebar({ tags, directories, social, footer }) {
       {/* 移动端菜单按钮 */}
       <button
         onClick={handleMobileMenuClick}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900"
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-950/50 dark:border dark:border-gray-700"
         aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}
       >
         {isMobileMenuOpen ? (
-          <XMarkIcon className="w-6 h-6" />
+          <XMarkIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
         ) : (
-          <Bars3Icon className="w-6 h-6" />
+          <Bars3Icon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
         )}
       </button>
 
       {/* 移动端菜单遮罩 */}
       <div
-        className={`lg:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-[40] transition-opacity duration-300 ${
+        className={`lg:hidden fixed inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm z-[40] transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={handleOverlayClick}
@@ -76,7 +76,7 @@ export default function Sidebar({ tags, directories, social, footer }) {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 flex flex-col bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900 transition-all duration-300 z-[50] overflow-hidden
+        className={`fixed inset-y-0 left-0 flex flex-col bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-950/50 dark:border-r dark:border-gray-700 transition-all duration-300 z-[50] overflow-hidden
           ${isCollapsed ? 'w-16' : 'w-64'}
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >

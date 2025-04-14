@@ -15,7 +15,7 @@ export default function PostList({ posts, simplifiedView = false }) {
       {posts.map((post) => (
         <article
           key={post.slug}
-          className={`p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow ${
+          className={`p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm dark:shadow-gray-700/50 dark:border dark:border-gray-700 hover:shadow-md transition-shadow ${
             simplifiedView ? 'py-4' : ''
           }`}
         >
@@ -26,7 +26,7 @@ export default function PostList({ posts, simplifiedView = false }) {
           >
             <h2 className={`text-xl font-semibold group-hover:text-blue-500 transition-colors ${
               simplifiedView ? 'mb-1' : 'mb-2'
-            }`}>
+            } text-gray-900 dark:text-gray-100`}>
               {post.title}
             </h2>
 
