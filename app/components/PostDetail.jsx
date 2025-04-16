@@ -86,15 +86,9 @@ export default function PostDetail({ post }) {
 
   // 自定义图片组件
   const CustomImage = ({ src, alt }) => {
-    let imageSrc = src
-    if (!src.startsWith('http') && !src.startsWith('/')) {
-      // 使用代理路径获取图片
-      const cleanImagePath = src.replace('images/', '');
-      imageSrc = `/api/images/${post.slug}/${cleanImagePath}`;
-    } else if (src.startsWith('/') && !src.startsWith('//')) {
-      // 处理绝对路径但不是协议相对URL的情况
-      imageSrc = `${baseUrl}${src}`
-    }
+    let imageSrc = src;
+    // 图片路径现已在 getPostFromBackend 中处理，
+    // 只需保留点击预览功能
 
     // 处理图片点击
     const handleImageClick = (e) => {
