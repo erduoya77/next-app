@@ -6,7 +6,7 @@ export default function TagCloud({ tags }) {
       {Object.entries(tags).map(([tag, count]) => (
         <Link
           key={tag}
-          href={`/tags/${encodeURIComponent(tag)}`}
+          href={`/search?tag=${encodeURIComponent(tag)}`}
           className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-full text-sm hover:bg-blue-500 hover:text-white transition-colors"
         >
           {tag} ({count})

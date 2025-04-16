@@ -21,7 +21,7 @@ export const metadata = {
     canonical: process.env.NEXT_PUBLIC_BASE_URL,
     types: {
       'application/rss+xml': [
-        { url: 'api/rss', title: `${config.site.title} RSS Feed` }
+        { url: 'rss.xml', title: `${config.site.title} RSS Feed` }
       ]
     }
   }
@@ -51,7 +51,7 @@ export default async function RootLayout({ children }) {
           rel="alternate" 
           type="application/rss+xml" 
           title={`${config.site.title} RSS Feed`} 
-          href="/api/rss" 
+          href="/rss.xml" 
         />
         <link 
           rel="sitemap" 

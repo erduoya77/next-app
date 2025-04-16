@@ -60,7 +60,7 @@ export default function PostList({ posts, simplifiedView = false }) {
               {parseTags(post.tags).map(tag => (
                 <Link
                   key={tag}
-                  href={`/tags/${encodeURIComponent(tag)}`}
+                  href={`/search?tag=${encodeURIComponent(tag)}`}
                   className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-colors"
                 >
                   {tag}

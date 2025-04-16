@@ -3,7 +3,6 @@ export const config = {
     title: 'erduoya',
     description: '破破烂烂、缝缝补补',
     author: 'erduoya',
-    contentPath: 'content',
     postsPerPage: 10,
   },
 

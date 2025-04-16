@@ -23,23 +23,12 @@ const nextConfig = {
     })
     return config
   },
-  // 添加重定向配置
-  async redirects() {
+  // 添加代理配置
+  async rewrites() {
     return [
       {
-        source: '/rss',
-        destination: '/api/rss',
-        permanent: true,
-      },
-      {
-        source: '/feed',
-        destination: '/api/rss',
-        permanent: true,
-      },
-      {
-        source: '/rss.xml',
-        destination: '/api/rss',
-        permanent: true,
+        source: '/api/images/:slug/:image*',
+        destination: '/api/images/:slug/:image*',
       },
     ]
   },

@@ -88,14 +88,9 @@ export default function PostDetail({ post }) {
   const CustomImage = ({ src, alt }) => {
     let imageSrc = src
     if (!src.startsWith('http') && !src.startsWith('/')) {
-      // 使用后端API获取图片
-      // 处理路径中的"images/"前缀
+      // 使用代理路径获取图片
       const cleanImagePath = src.replace('images/', '');
-      
-      // 处理API URL，移除末尾的/api以便正确构建路径
-      const baseApiUrl = apiBaseUrl.endsWith('/api') ? apiBaseUrl.slice(0, -4) : apiBaseUrl;
-      
-      imageSrc = `${baseApiUrl}/api/images/${post.slug}/${cleanImagePath}`;
+      imageSrc = `/api/images/${post.slug}/${cleanImagePath}`;
     } else if (src.startsWith('/') && !src.startsWith('//')) {
       // 处理绝对路径但不是协议相对URL的情况
       imageSrc = `${baseUrl}${src}`
